@@ -19,8 +19,7 @@ export class daily_members extends BaseEntity {
   @Column()
   count: number;
 
-  @PrimaryColumn()
-  @CreateDateColumn({ type: 'date' })
+  @CreateDateColumn({ type: 'date', primary: true })
   created_date: Date;
 
   @UpdateDateColumn()

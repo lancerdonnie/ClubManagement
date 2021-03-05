@@ -15,13 +15,10 @@ export class user extends BaseEntity {
   id: number;
 
   @Column()
-  username: number;
+  username: string;
 
   @Column()
   password: string;
-
-  @Column()
-  admin: boolean;
 
   @OneToMany(() => invite, (invite: invite) => invite.user)
   invites: invite[];
