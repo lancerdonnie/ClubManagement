@@ -8,10 +8,10 @@ import {
   JoinTable,
   ManyToMany,
 } from 'typeorm';
-import { user } from './User';
+import { User } from './User';
 
-@Entity()
-export class club extends BaseEntity {
+@Entity('club')
+export class Club extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -21,9 +21,9 @@ export class club extends BaseEntity {
   @Column()
   user_id: number;
 
-  @ManyToMany(() => user)
+  @ManyToMany(() => User)
   @JoinTable({ name: 'club_members' })
-  club_members: user[];
+  club_members: User[];
 
   @CreateDateColumn()
   created_date: Date;

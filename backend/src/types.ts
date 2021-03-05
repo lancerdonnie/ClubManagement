@@ -1,5 +1,5 @@
 import type { Response, Request } from 'express';
-import { user } from './entity/User';
+import { User } from './entity/User';
 
 export interface IResponse {
   message?: string;
@@ -13,7 +13,7 @@ export interface TypedRequest<T> extends Request {
 
 export interface RequestWithUser<T = any> extends Request {
   body: T;
-  user?: user;
+  user?: User;
 }
 
 export type Login = {

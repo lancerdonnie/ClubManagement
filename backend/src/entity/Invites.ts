@@ -1,24 +1,12 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BaseEntity,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-} from 'typeorm';
-import { user } from './User';
+import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity()
-export class invite extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+@Entity('invite')
+export class Invite extends BaseEntity {
+  @Column({ primary: true })
   club_id: number;
 
-  @ManyToOne(() => user, (user: user) => user.invites)
-  user: user;
+  @Column({ primary: true })
+  user_id: number;
 
   @CreateDateColumn()
   created_date: Date;

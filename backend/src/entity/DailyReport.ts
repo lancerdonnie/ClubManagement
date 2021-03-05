@@ -8,11 +8,8 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-@Entity()
-export class daily_members extends BaseEntity {
-  @Column()
-  user_id: number;
-
+@Entity('daily_report')
+export class DailyReport extends BaseEntity {
   @Column()
   club_id: number;
 

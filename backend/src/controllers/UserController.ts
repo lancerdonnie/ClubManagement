@@ -1,7 +1,7 @@
 import type { IResponse, Login, RequestWithUser, TypedRequest } from '../types';
 import type { Response, Request } from 'express';
 import { Router } from 'express';
-import { user } from '../entity/User';
+import { User } from '../entity/User';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { authValidation } from '../middleware/validation/AuthValidation';
@@ -13,7 +13,7 @@ const router = Router();
 router.post('/register', authValidation, async (req: TypedRequest<Login>, res: Response<IResponse>) => {
   const { username, password } = req.body;
   try {
-    const foundUser = await user.findOne({ where: { username } });
+    const foundUser = await User.findOne({ where: { username } });
 
     if (foundUser) {
       return res.status(400).json({
@@ -25,8 +25,8 @@ router.post('/register', authValidation, async (req: TypedRequest<Login>, res: R
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await user.create({ username, password: hashedPassword });
-    await user.save(newUser);
+    const newUser = await User.create({ username, password: hashedPassword });
+    await User.save(newUser);
 
     const token = jwt.sign({ username }, process.env.SECRET!, { expiresIn: '1h' });
 
@@ -49,7 +49,7 @@ router.post('/login', authValidation, async (req: TypedRequest<Login>, res: Resp
   const { username, password } = req.body;
 
   try {
-    const foundUser = await user.findOne({ where: { username } });
+    const foundUser = await User.findOne({ where: { username } });
 
     if (!foundUser) {
       return res.status(400).json({
@@ -87,7 +87,7 @@ router.post('/login', authValidation, async (req: TypedRequest<Login>, res: Resp
 //get users
 router.get('/users', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   try {
-    const users = await user.find();
+    const users = await User.find();
 
     return res.json({
       data: {

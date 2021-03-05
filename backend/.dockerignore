@@ -4,4 +4,5 @@ README.md
 node_modules
 dist
 src/migration
-src/tests
+src/
+.env

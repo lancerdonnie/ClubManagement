@@ -1,7 +1,7 @@
 import type { RequestWithUser, TypedRequest } from '../types';
 import { Request, NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { user } from '../entity/User';
+import { User } from '../entity/User';
 
 const auth = async (req: RequestWithUser, res: Response, next: NextFunction) => {
   const token = req.headers.authorization;
@@ -27,7 +27,7 @@ const auth = async (req: RequestWithUser, res: Response, next: NextFunction) => 
       });
     }
 
-    const foundUser = await user.findOne({ where: { username: valid.username } });
+    const foundUser = await User.findOne({ where: { username: valid.username } });
 
     if (!foundUser) {
       return res.status(400).json({
