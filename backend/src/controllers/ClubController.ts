@@ -7,7 +7,7 @@ import { Club } from '../entity/Club';
 import { User } from '../entity/User';
 import { Invite } from '../entity/Invites';
 import { DailyReport } from '../entity/DailyReport';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 
 const router = Router();
 
@@ -46,13 +46,37 @@ router.post(
   }
 );
 
-//get all clubs
+//get my clubs
 router.get('/', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   try {
-    const clubs = await Club.find({ where: { user_id: req.user?.id } });
+    const clubs = await Club.find({ relations: ['club_members'] });
 
-    return res.status(201).json({
-      data: { clubs },
+    const newClubs = clubs.filter(
+      (e) => e.user_id === req.user?.id || e.club_members.find((f) => f.id === req.user?.id) !== null
+    );
+    // .map((e) => ({ id: e.id,name: e.name, admin: e.id === req.user?.id ? true : false }));
+
+    return res.status(200).json({
+      data: newClubs,
+      status: 'success',
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      data: null,
+      status: 'error',
+      message: 'Server Error',
+    });
+  }
+});
+
+//get other clubs
+router.get('/other', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
+  try {
+    const clubs = await Club.find({ where: { user_id: Not(req.user?.id) }, relations: ['club_members'] });
+
+    return res.status(200).json({
+      data: clubs.filter((e) => e.club_members.find((f) => f.id === req.user?.id) === null),
       status: 'success',
     });
   } catch (error) {
@@ -71,8 +95,8 @@ router.get('/:id', auth, async (req: RequestWithUser, res: Response<IResponse>) 
   try {
     const clubs = await Club.findOne({ where: { id: clubId }, relations: ['club_members'] });
 
-    return res.status(201).json({
-      data: { clubs },
+    return res.status(200).json({
+      data: clubs,
       status: 'success',
     });
   } catch (error) {
@@ -139,7 +163,7 @@ router.post(
       DailyReport.save(dailyReport);
 
       return res.status(200).json({
-        data: { club },
+        data: club,
         status: 'success',
       });
     } catch (error) {
@@ -201,7 +225,7 @@ router.post(
       DailyReport.save(dailyReport);
 
       return res.status(200).json({
-        data: { club },
+        data: club,
         status: 'success',
       });
     } catch (error) {
@@ -235,70 +259,6 @@ router.post('/join/:id', auth, async (req: RequestWithUser, res: Response<IRespo
     if (req.user && club.user_id !== req.user?.id) club.club_members.push(req.user);
 
     await club.save();
-
-    return res.status(200).json({
-      data: null,
-      status: 'success',
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      data: null,
-      status: 'error',
-      message: 'Server Error',
-    });
-  }
-});
-
-//invite user
-router.post('/invite/:clubid/:userid', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
-  const clubId = req.params.clubid;
-  const userId = req.params.userid;
-
-  try {
-    const club = await Club.findOne({
-      where: { id: clubId },
-      relations: ['club_members'],
-    });
-
-    if (!club) {
-      return res.status(404).json({
-        data: null,
-        status: 'error',
-        message: 'This club does not exist',
-      });
-    }
-
-    if (club.user_id !== req.user?.id) {
-      return res.status(403).json({
-        data: null,
-        status: 'error',
-        message: 'Permission denied',
-      });
-    }
-
-    if (club.club_members.find((e) => e.id.toString() === userId) !== null) {
-      return res.status(400).json({
-        data: null,
-        status: 'error',
-        message: 'User is already in this club',
-      });
-    }
-
-    const invite = await Invite.findOne({
-      where: { club_id: clubId, user_id: userId },
-    });
-
-    if (invite) {
-      return res.status(400).json({
-        data: null,
-        status: 'error',
-        message: 'User has already been invited',
-      });
-    }
-
-    const newInvite = await Invite.create({ club_id: Number(clubId), user_id: Number(userId) });
-    await Invite.save(newInvite);
 
     return res.status(200).json({
       data: null,

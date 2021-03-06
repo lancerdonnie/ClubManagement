@@ -70,7 +70,7 @@ router.post('/login', authValidation, async (req: TypedRequest<Login>, res: Resp
     }
     const token = jwt.sign({ username }, process.env.SECRET!, { expiresIn: '1h' });
 
-    return res.status(201).json({
+    return res.status(200).json({
       data: { username, token },
       status: 'success',
     });
@@ -90,14 +90,12 @@ router.get('/users', auth, async (req: RequestWithUser, res: Response<IResponse>
     const users = await User.find();
 
     return res.json({
-      data: {
-        users: users
-          .map(({ id, username }) => ({
-            id,
-            username,
-          }))
-          .filter((e) => e.id !== req.user?.id),
-      },
+      data: users
+        .map(({ id, username }) => ({
+          id,
+          username,
+        }))
+        .filter((e) => e.id !== req.user?.id),
       status: 'success',
     });
   } catch (error) {

@@ -14,7 +14,7 @@ router.get('/getdailyreport/:id', auth, async (req: RequestWithUser, res: Respon
     const reports = await DailyReport.find({ where: { club_id: clubId } });
 
     return res.status(200).json({
-      data: { reports },
+      data: reports,
       status: 'success',
     });
   } catch (error) {

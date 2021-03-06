@@ -4,7 +4,7 @@ import { User } from './entity/User';
 export interface IResponse {
   message?: string;
   status: 'success' | 'error';
-  data: {} | null;
+  data: any;
 }
 
 export interface TypedRequest<T> extends Request {
