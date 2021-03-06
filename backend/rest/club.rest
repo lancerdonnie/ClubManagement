@@ -1,5 +1,5 @@
 # Using vs-code? Install rest client by Huachao Mao to run this file
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjE0OTYyMTU2LCJleHAiOjE2MTQ5NjU3NTZ9.Yq53TJk8Pn6sCzBVWRhLeCbqDhnnJY7xT9DhMxxPHKM
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjE1MDI1MzkwLCJleHAiOjE2MTUwMjg5OTB9.k6UICua95su46BtBLG4j2lVKmlPhfvFT9EFZ1xhk0_M
 
 ###
 POST http://localhost:5000/clubs HTTP/1.1
@@ -25,7 +25,7 @@ Content-Type: application/json
 
 {
   "id":1,
-  "members":[3,2]
+  "members":[4]
 }
 
 ###
