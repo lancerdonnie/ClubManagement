@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .navbutton{
+    @apply hover:text-white hover:bg-gray-400 rounded p-1.5;
+  }
+
+  .attempticon{
+    @apply cursor-pointer text-blue-900 bg-blue-300 hover:bg-blue-200 p-2 transition duration-100 ease-out ;
+  }
+}

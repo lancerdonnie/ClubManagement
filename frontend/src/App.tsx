@@ -1,25 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
+import Main from 'Main';
+import ProtectedRoute from 'pages/ProtectedRoute';
+import { QueryClientProvider } from 'react-query';
+import { queryClient, setup } from 'Utils/util';
+import Login from 'pages/Login';
+import Register from 'pages/Register';
+
+setup();
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+        <Switch>
+          <Route component={Login} path="/login" />
+          <Route component={Register} path="/register" />
+          <ProtectedRoute component={Main} path="/" />
+        </Switch>
+      </div>
+    </QueryClientProvider>
   );
 }
 
