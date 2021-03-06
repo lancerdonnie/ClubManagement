@@ -5,7 +5,9 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { ClubMembers } from './ClubMembers';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -17,6 +19,9 @@ export class User extends BaseEntity {
 
   @Column()
   password: string;
+
+  @OneToMany(() => ClubMembers, (clubMember) => clubMember.user, { cascade: true })
+  clubMembers: ClubMembers[];
 
   @CreateDateColumn()
   created_date: Date;

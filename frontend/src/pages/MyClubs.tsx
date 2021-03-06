@@ -9,7 +9,7 @@ const MyClubs = ({ history }: RouteComponentProps) => {
     {
       id: number;
       name: string;
-      user_id: number;
+      admin: boolean;
     }[]
   >(`clubs`);
   return (
@@ -19,8 +19,13 @@ const MyClubs = ({ history }: RouteComponentProps) => {
       </Button>
       <div>Clubs</div>
       <div>
-        {data?.map(({ id, name }) => (
-          <div key={id} onClick={() => history.push(`/club/${id}`)}>
+        {data?.map(({ id, name, admin }) => (
+          <div
+            key={id}
+            onClick={() => {
+              if (admin) history.push(`/club/${id}`);
+            }}
+          >
             {name}
           </div>
         ))}

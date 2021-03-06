@@ -8,6 +8,7 @@ import { User } from '../entity/User';
 import { Invite } from '../entity/Invites';
 import { DailyReport } from '../entity/DailyReport';
 import { In, Not } from 'typeorm';
+import { ClubMembers } from '../entity/ClubMembers';
 
 const router = Router();
 
@@ -28,8 +29,13 @@ router.post(
         });
       }
 
-      const newClub = await Club.create({ name: req.body.name, user_id: req.user?.id });
-      await Club.save(newClub);
+      const newClub = await Club.create({
+        name: req.body.name,
+        user_id: req.user?.id,
+        clubMembers: [{ is_admin: true, user: req.user }],
+      });
+
+      await newClub.save();
 
       return res.status(201).json({
         data: { newClub },
@@ -49,15 +55,14 @@ router.post(
 //get my clubs
 router.get('/', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   try {
-    const clubs = await Club.find({ relations: ['club_members'] });
-
-    const newClubs = clubs.filter(
-      (e) => e.user_id === req.user?.id || e.club_members.find((f) => f.id === req.user?.id) !== null
+    const clubs: { admin: boolean; name: string; id: number }[] = await Club.query(
+      `SELECT DISTINCT c.name,cm."clubId" AS id, cm."userId" = $1 AS admin FROM club_members cm 
+    INNER JOIN club c ON cm."clubId" = c.id WHERE cm."userId" = $1`,
+      [req.user?.id]
     );
-    // .map((e) => ({ id: e.id,name: e.name, admin: e.id === req.user?.id ? true : false }));
 
     return res.status(200).json({
-      data: newClubs,
+      data: clubs,
       status: 'success',
     });
   } catch (error) {
@@ -73,10 +78,18 @@ router.get('/', auth, async (req: RequestWithUser, res: Response<IResponse>) => 
 //get other clubs
 router.get('/other', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   try {
-    const clubs = await Club.find({ where: { user_id: Not(req.user?.id) }, relations: ['club_members'] });
+    const clubs: {
+      name: string;
+      clubId: number;
+    } = await Club.query(
+      `SELECT DISTINCT cm."clubId", c.name from club_members cm 
+      LEFT JOIN club c ON cm."clubId" = c.id where cm."clubId" not in 
+      (SELECT cm."clubId" FROM club_members cm where cm."userId" = $1)`,
+      [req.user?.id]
+    );
 
     return res.status(200).json({
-      data: clubs.filter((e) => e.club_members.find((f) => f.id === req.user?.id) === null),
+      data: clubs,
       status: 'success',
     });
   } catch (error) {
@@ -93,10 +106,21 @@ router.get('/other', auth, async (req: RequestWithUser, res: Response<IResponse>
 router.get('/:id', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   const clubId = req.params.id;
   try {
-    const clubs = await Club.findOne({ where: { id: clubId }, relations: ['club_members'] });
+    const clubs = await ClubMembers.find({ where: { clubId }, relations: ['user', 'club'] });
+
+    // const c = await Club.find({ where: { clubMembers: { clubId } }, relations: ['clubMembers'] });
+    // console.log(c);
+
+    const newClubs = clubs
+      .map((e) => ({
+        id: e.user.id,
+        username: e.user.username,
+        name: e.club.name,
+      }))
+      .filter((e) => e.id !== req.user?.id);
 
     return res.status(200).json({
-      data: clubs,
+      data: newClubs,
       status: 'success',
     });
   } catch (error) {
@@ -109,73 +133,76 @@ router.get('/:id', auth, async (req: RequestWithUser, res: Response<IResponse>) 
   }
 });
 
-//add members
-router.post(
-  '/addmembers',
-  auth,
-  addMembersValidation,
-  async (req: RequestWithUser<{ id: number; members: number[] }>, res: Response<IResponse>) => {
-    try {
-      const club = await Club.findOne({
-        where: { id: req.body.id },
-        relations: ['club_members'],
-      });
+//add members-remove this only send invites
+// router.post(
+//   '/addmembers',
+//   auth,
+//   addMembersValidation,
+//   async (req: RequestWithUser<{ id: number; members: number[] }>, res: Response<IResponse>) => {
+//     try {
+//       const club = await Club.findOne({
+//         where: { id: req.body.id },
+//         relations: ['clubMembers'],
+//       });
 
-      if (!club) {
-        return res.status(404).json({
-          data: null,
-          status: 'error',
-          message: 'This club does not exist',
-        });
-      }
+//       if (!club) {
+//         return res.status(404).json({
+//           data: null,
+//           status: 'error',
+//           message: 'This club does not exist',
+//         });
+//       }
 
-      if (club.user_id !== req.user?.id) {
-        return res.status(403).json({
-          data: null,
-          status: 'error',
-          message: 'Permission denied',
-        });
-      }
+//       if (club.user_id !== req.user?.id) {
+//         return res.status(403).json({
+//           data: null,
+//           status: 'error',
+//           message: 'Permission denied',
+//         });
+//       }
 
-      const members = await User.find({ where: { id: In(req.body.members) } });
+//       //add error
+//       if (!req.body.members.includes(req.user.id)) {
+//         const clubMembers = req.body.members.map((e) => {
+//           const cM = new ClubMembers();
+//           cM.userId = e;
+//           cM.is_admin = false;
+//           return cM;
+//         });
+//         club.clubMembers.push(...clubMembers);
+//       }
 
-      club.club_members.push(
-        ...members
-          .filter((e) => e.id !== req.user?.id)
-          .filter((e) => club.club_members.find((m) => m.id === e.id) !== null)
-      );
+//       await club.save();
 
-      await club.save();
+//       let dailyReport = await DailyReport.findOne({
+//         where: { created_date: new Date().toLocaleDateString(), club_id: club.id },
+//       });
 
-      let dailyReport = await DailyReport.findOne({
-        where: { created_date: new Date().toLocaleDateString(), club_id: club.id },
-      });
+//       if (dailyReport) {
+//         dailyReport.count = club.clubMembers.length;
+//       } else {
+//         dailyReport = DailyReport.create({
+//           created_date: new Date().toLocaleDateString(),
+//           club_id: club.id,
+//           count: club.clubMembers.length,
+//         });
+//       }
+//       DailyReport.save(dailyReport);
 
-      if (dailyReport) {
-        dailyReport.count = club.club_members.length;
-      } else {
-        dailyReport = DailyReport.create({
-          created_date: new Date().toLocaleDateString(),
-          club_id: club.id,
-          count: club.club_members.length,
-        });
-      }
-      DailyReport.save(dailyReport);
-
-      return res.status(200).json({
-        data: club,
-        status: 'success',
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        data: null,
-        status: 'error',
-        message: 'Server Error',
-      });
-    }
-  }
-);
+//       return res.status(200).json({
+//         data: club,
+//         status: 'success',
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({
+//         data: null,
+//         status: 'error',
+//         message: 'Server Error',
+//       });
+//     }
+//   }
+// );
 
 //remove members
 router.post(
@@ -186,7 +213,7 @@ router.post(
     try {
       const club = await Club.findOne({
         where: { id: req.body.id },
-        relations: ['club_members'],
+        relations: ['clubMembers', 'clubMembers.user'],
       });
 
       if (!club) {
@@ -205,27 +232,40 @@ router.post(
         });
       }
 
-      club.club_members = club.club_members.filter((e) => !req.body.members.includes(e.id));
-
-      await club.save();
-
-      let dailyReport = await DailyReport.findOne({
-        where: { created_date: new Date().toLocaleDateString(), club_id: club.id },
-      });
-
-      if (dailyReport) {
-        dailyReport.count = club.club_members.length;
-      } else {
-        dailyReport = DailyReport.create({
-          created_date: new Date().toLocaleDateString(),
-          club_id: club.id,
-          count: club.club_members.length,
+      if (req.body.members.includes(req.user?.id)) {
+        return res.status(400).json({
+          data: null,
+          status: 'error',
+          message: 'Cannot remove admin',
         });
       }
-      DailyReport.save(dailyReport);
+
+      // club.clubMembers = club.clubMembers.filter((e) => !req.body.members.includes(e.user.id));
+
+      // await club.save();
+
+      await ClubMembers.query(`DELETE FROM club_members cm WHERE cm."clubId" = $1 AND cm."userId" in ($2)`, [
+        club.id,
+        req.body.members.join(','),
+      ]);
+
+      // let dailyReport = await DailyReport.findOne({
+      //   where: { created_date: new Date().toLocaleDateString(), club_id: club.id },
+      // });
+
+      // if (dailyReport) {
+      //   dailyReport.count = club.clubMembers.length;
+      // } else {
+      //   dailyReport = DailyReport.create({
+      //     created_date: new Date().toLocaleDateString(),
+      //     club_id: club.id,
+      //     count: club.clubMembers.length,
+      //   });
+      // }
+      // DailyReport.save(dailyReport);
 
       return res.status(200).json({
-        data: club,
+        data: null,
         status: 'success',
       });
     } catch (error) {
@@ -256,7 +296,7 @@ router.post('/join/:id', auth, async (req: RequestWithUser, res: Response<IRespo
       });
     }
 
-    if (req.user && club.user_id !== req.user?.id) club.club_members.push(req.user);
+    // if (req.user && club.user_id !== req.user?.id) club.clubMembers.push(req.user);
 
     await club.save();
 

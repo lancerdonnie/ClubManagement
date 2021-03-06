@@ -5,10 +5,9 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinTable,
-  ManyToMany,
+  OneToMany,
 } from 'typeorm';
-import { User } from './User';
+import { ClubMembers } from './ClubMembers';
 
 @Entity('club')
 export class Club extends BaseEntity {
@@ -21,9 +20,8 @@ export class Club extends BaseEntity {
   @Column()
   user_id: number;
 
-  @ManyToMany(() => User)
-  @JoinTable({ name: 'club_members' })
-  club_members: User[];
+  @OneToMany(() => ClubMembers, (clubMember) => clubMember.club, { cascade: true })
+  clubMembers: ClubMembers[];
 
   @CreateDateColumn()
   created_date: Date;

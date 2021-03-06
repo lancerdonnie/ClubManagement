@@ -5,6 +5,7 @@ import auth from '../middleware/Auth';
 import { Invite } from '../entity/Invites';
 import { Club } from '../entity/Club';
 import { DailyReport } from '../entity/DailyReport';
+import { ClubMembers } from '../entity/ClubMembers';
 
 const router = Router();
 
@@ -12,7 +13,15 @@ const router = Router();
 router.get('/', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   try {
     //add join clubs here
-    const invites = await Invite.find({ where: { user_id: req.user?.id } });
+    // const invites = await Invite.find({ where: { user_id: req.user?.id }, relations: ['club'] });
+    const invites: {
+      user_id: number;
+      club_id: number;
+      name: string;
+    }[] = await Invite.query(
+      `SELECT i.user_id, i.club_id, c.name FROM invite i LEFT JOIN club c ON i.club_id = c.id WHERE i.user_id = $1`,
+      [req.user?.id]
+    );
 
     return res.status(200).json({
       data: invites,
@@ -36,7 +45,7 @@ router.post('/:clubid/:userid', auth, async (req: RequestWithUser, res: Response
   try {
     const club = await Club.findOne({
       where: { id: clubId },
-      relations: ['club_members'],
+      relations: ['clubMembers'],
     });
 
     if (!club) {
@@ -55,13 +64,13 @@ router.post('/:clubid/:userid', auth, async (req: RequestWithUser, res: Response
       });
     }
 
-    if (club.club_members.find((e) => e.id.toString() === userId) !== null) {
-      return res.status(400).json({
-        data: null,
-        status: 'error',
-        message: 'User is already in this club',
-      });
-    }
+    // if (club.clubMembers.find((e) => e.id.toString() === userId) !== null) {
+    //   return res.status(400).json({
+    //     data: null,
+    //     status: 'error',
+    //     message: 'User is already in this club',
+    //   });
+    // }
 
     const invite = await Invite.findOne({
       where: { club_id: clubId, user_id: userId },
@@ -109,6 +118,7 @@ router.post('/:id', auth, async (req: RequestWithUser, res: Response<IResponse>)
 
     const club = await Club.findOne({
       where: { id: clubId },
+      relations: ['clubMembers'],
     });
 
     if (!club) {
@@ -119,24 +129,28 @@ router.post('/:id', auth, async (req: RequestWithUser, res: Response<IResponse>)
       });
     }
 
-    if (req.user && club.user_id !== req.user?.id) club.club_members.push(req.user);
+    const clubMember = new ClubMembers();
+    clubMember.user = req.user!;
+    clubMember.is_admin = false;
+
+    if (req.user && club.user_id !== req.user?.id) club.clubMembers.push(clubMember);
 
     await club.save();
 
-    let dailyReport = await DailyReport.findOne({
-      where: { created_date: new Date().toLocaleDateString(), club_id: club.id },
-    });
+    // let dailyReport = await DailyReport.findOne({
+    //   where: { created_date: new Date().toLocaleDateString(), club_id: club.id },
+    // });
 
-    if (dailyReport) {
-      dailyReport.count = club.club_members.length;
-    } else {
-      dailyReport = DailyReport.create({
-        created_date: new Date().toLocaleDateString(),
-        club_id: club.id,
-        count: club.club_members.length,
-      });
-    }
-    DailyReport.save(dailyReport);
+    // if (dailyReport) {
+    //   dailyReport.count = club.clubMembers.length;
+    // } else {
+    //   dailyReport = DailyReport.create({
+    //     created_date: new Date().toLocaleDateString(),
+    //     club_id: club.id,
+    //     count: club.clubMembers.length,
+    //   });
+    // }
+    // DailyReport.save(dailyReport);
 
     Invite.remove(invite);
 

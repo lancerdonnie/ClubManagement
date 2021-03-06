@@ -10,7 +10,7 @@ const auth = async (req: RequestWithUser, res: Response, next: NextFunction) => 
     return res.status(401).json({
       data: null,
       status: 'error',
-      message: 'You are not allowed to view this resource',
+      message: 'Access Denied',
     });
   }
 

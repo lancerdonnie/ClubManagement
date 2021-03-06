@@ -8,15 +8,11 @@ import mutate from './api';
 type ClubType = {
   id: number;
   name: string;
-  user_id: number;
-  club_members: {
-    id: number;
-    username: string;
-  }[];
+  username: string;
 };
 
 const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }>) => {
-  const { data, refetch } = useQuery<ClubType>(`clubs/${params.id}`);
+  const { data, refetch } = useQuery<ClubType[]>(`clubs/${params.id}`);
 
   const { mutate: deleteMember } = useMutation((data: any) => mutate('clubs/removemembers', data), {
     onSuccess: () => {
@@ -26,7 +22,7 @@ const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }
 
   return (
     <Container>
-      {data && (
+      {data && data?.length > 0 && (
         <div>
           <Button
             className="bg-purple-400"
@@ -36,10 +32,10 @@ const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }
           >
             Invite Member
           </Button>
-          <div className="uppercase">{data.name}</div>
+          <div className="uppercase">{data[0].name}</div>
           <div>Members</div>
           <div>
-            {data.club_members.map(({ id, username }) => (
+            {data.map(({ id, username }) => (
               <div key={id}>
                 {username}
                 <i

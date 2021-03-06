@@ -32,22 +32,17 @@ export const setup = () => {
     (response) => {
       if (response.status === 200 && response.config.method !== 'get') {
         if (response.data.token) return response;
-        if (response.data.status === true) {
+        if (response.data.status === 'success') {
           Toast({
-            msg: response.data.detail,
+            msg: response.data.status,
             type: 'success',
-            notify: response.data.detail === 'Success' ? false : true,
           });
         } else if (response.data.status === false) {
           Toast({
-            msg: response.data.detail,
+            msg: response.data.message,
             type: 'warning',
-            notify: true,
           });
         } else {
-          if (response.data.detail) {
-            Toast({ msg: response.data.detail, type: 'error', notify: true });
-          }
         }
         return response;
       } else {

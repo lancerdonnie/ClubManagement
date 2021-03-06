@@ -6,6 +6,7 @@ import MyClubs from 'pages/MyClubs';
 import CreateClub from 'pages/CreateClub';
 import Club from 'pages/Club';
 import Invite from 'pages/Invite';
+import MyInvites from 'pages/MyInvites';
 
 const Main = () => {
   return (
@@ -17,6 +18,7 @@ const Main = () => {
         <Route path="/myclubs/create" component={CreateClub} />
         <Route path="/club/:id" component={Club} />
         <Route path="/invite/:id" component={Invite} />
+        <Route exact path="/myinvites" component={MyInvites} />
       </Switch>
     </div>
   );
