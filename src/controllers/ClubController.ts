@@ -1,13 +1,9 @@
-import type { IResponse, RequestWithUser, TypedRequest } from '../types';
-import type { Response, Request } from 'express';
+import type { IResponse, RequestWithUser } from '../types';
+import type { Response } from 'express';
 import { Router } from 'express';
 import auth from '../middleware/Auth';
 import { addMembersValidation, clubValidation } from '../middleware/validation/ClubValidation';
 import { Club } from '../entity/Club';
-import { User } from '../entity/User';
-import { Invite } from '../entity/Invites';
-import { DailyReport } from '../entity/DailyReport';
-import { In, Not } from 'typeorm';
 import { ClubMembers } from '../entity/ClubMembers';
 import { report } from './helper';
 
@@ -108,22 +104,27 @@ router.get('/other', auth, async (req: RequestWithUser, res: Response<IResponse>
 //get single club
 router.get('/:id', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   const clubId = req.params.id;
+
   try {
-    const clubs = await ClubMembers.find({ where: { clubId }, relations: ['user', 'club'] });
+    let club = await Club.createQueryBuilder('club')
+      .leftJoinAndSelect('club.clubMembers', 'clubMembers')
+      .leftJoinAndSelect('clubMembers.user', 'user')
+      .select(['club.id', 'club.name', 'clubMembers.userId', 'user.username'])
+      .where('club.id= :clubId', { clubId })
+      .getOne();
 
-    // const c = await Club.find({ where: { clubMembers: { clubId } }, relations: ['clubMembers'] });
-    // console.log(c);
+    if (!club) {
+      return res.status(400).json({
+        data: null,
+        status: 'error',
+        message: 'club does not exist',
+      });
+    }
 
-    const newClubs = clubs
-      .map((e) => ({
-        id: e.user.id,
-        username: e.user.username,
-        name: e.club.name,
-      }))
-      .filter((e) => e.id !== req.user?.id);
+    club.clubMembers = club.clubMembers.filter((e) => e.userId !== req.user?.id);
 
     return res.status(200).json({
-      data: newClubs,
+      data: club,
       status: 'success',
     });
   } catch (error) {

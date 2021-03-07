@@ -10,7 +10,10 @@ import Spinner from 'components/Spinner';
 type ClubType = {
   id: number;
   name: string;
-  username: string;
+  clubMembers: {
+    userId: number;
+    user: { username: string };
+  }[];
 };
 
 const dataset = {
@@ -35,7 +38,7 @@ const dataset = {
 };
 
 const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }>) => {
-  const { data, refetch, isFetching } = useQuery<ClubType[]>(`clubs/${params.id}`);
+  const { data, refetch, isFetching } = useQuery<ClubType>(`clubs/${params.id}`);
   const { data: report, isFetching: isFetching2 } = useQuery<any>(`dailyreport/${params.id}`, {
     select: (
       data: {
@@ -68,14 +71,14 @@ const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }
       >
         Invite Member
       </Button>
-      {data && data?.length > 0 && (
+      {data && (
         <div>
           <div className="uppercase my-2 font-bold text-lg">
-            {data[0].name} <Spinner show={isFetching || isFetching2 || isLoading} />
+            {data.name} <Spinner show={isFetching || isFetching2 || isLoading} />
           </div>
           <div className="mb-2">Members</div>
           <div>
-            {data.map(({ id, username }) => (
+            {data.clubMembers.map(({ userId: id, user: { username } }) => (
               <div key={id} className="mb-1">
                 <i
                   className="fa fa-trash cursor-pointer mr-3 text-red-600"
