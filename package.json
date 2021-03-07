@@ -5,7 +5,6 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "poststart": "cd frontend && npm prune --production",
     "heroku-postbuild": "tsc && cd frontend && npm install && npm run build",
     "dev": "nodemon src/index.ts",
     "start": "node dist/index.js",
