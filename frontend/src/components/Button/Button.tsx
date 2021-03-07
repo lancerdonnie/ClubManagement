@@ -16,7 +16,7 @@ const Button = ({ children, className, variant = 'default', ...props }: Props) =
   return (
     <button
       {...props}
-      className={`${btn[variant]} inline-flex items-center justify-center rounded-md outline-none cursor-pointer px-5 py-2 border border-solid border-gray-300 hover:text-white hover:border-transparent transition duration-300 ease-in-out ${className}`}
+      className={`${btn[variant]} inline-flex items-center justify-center rounded-md cursor-pointer px-5 py-2 border border-solid border-gray-300 hover:text-white hover:border-transparent transition duration-300 ease-in-out ${className}`}
     >
       {children}
     </button>

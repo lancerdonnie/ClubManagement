@@ -12,7 +12,7 @@ const Select = ({ name, options = [], dataName, dataValue, className, ...props }
       <select
         id={name}
         name={name}
-        className={`inline-flex items-center justify-center rounded-md outline-none cursor-pointer px-5 py-2 border border-solid border-gray-300 hover:text-white hover:border-transparent transition duration-300 ease-in-out ${className}`}
+        className={`inline-flex items-center justify-center rounded-md outline-none cursor-pointer px-5 py-2 border border-solid border-gray-300  transition duration-300 ease-in-out ${className}`}
         {...props}
       >
         {props.placeholder && <option value="">{props.placeholder}</option>}

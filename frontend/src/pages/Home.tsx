@@ -22,7 +22,8 @@ const Home = () => {
       <div className="w-72">
         {data?.map((e) => (
           <div key={e.clubId} className="mb-2 flex justify-between items-center">
-            <span className="break-all">{e.name}</span> <Button onClick={() => join(e.clubId)}>Join</Button>
+            <span className="break-all uppercase">{e.name}</span>
+            <Button onClick={() => join(e.clubId)}>Join</Button>
           </div>
         ))}
       </div>

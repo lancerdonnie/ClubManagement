@@ -3,3 +3,7 @@
 body {
   font-family: 'Montserrat', sans-serif;
 }
+
+button:focus {
+  outline: none;
+}

@@ -1,13 +1,12 @@
+import React from 'react';
 import Button from 'components/Button/Button';
 import Container from 'layout/Container';
-import React from 'react';
 import { useMutation, useQuery } from 'react-query';
 import mutate from './api';
+import Spinner from 'components/Spinner';
 
-interface Props {}
-
-const MyInvites = (props: Props) => {
-  const { data, refetch } = useQuery<
+const MyInvites = () => {
+  const { data, refetch, isFetching } = useQuery<
     {
       club_id: number;
       user_id: number;
@@ -15,7 +14,7 @@ const MyInvites = (props: Props) => {
     }[]
   >(`invites`);
 
-  const { mutate: join } = useMutation((data: number) => mutate(`invites/${data}`), {
+  const { mutate: join, isLoading } = useMutation((data: number) => mutate(`invites/${data}`), {
     onSuccess: () => {
       refetch();
     },
@@ -23,10 +22,15 @@ const MyInvites = (props: Props) => {
 
   return (
     <Container>
+      <div className="h-6 flex items-start">
+        <Spinner show={isFetching || isLoading} />
+      </div>
       {data?.map(({ club_id, user_id, name }) => (
-        <div key={`${club_id}${user_id}`} className="uppercase">
+        <div key={`${club_id}${user_id}`} className="uppercase mb-2">
           {name}
-          <Button onClick={() => join(club_id)}>join</Button>
+          <Button className="ml-2" variant="primary" onClick={() => join(club_id)}>
+            join
+          </Button>
         </div>
       ))}
     </Container>

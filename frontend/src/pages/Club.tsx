@@ -5,6 +5,7 @@ import { useMutation, useQuery } from 'react-query';
 import type { RouteComponentProps } from 'react-router-dom';
 import mutate from './api';
 import { Line } from 'react-chartjs-2';
+import Spinner from 'components/Spinner';
 
 type ClubType = {
   id: number;
@@ -17,7 +18,7 @@ const dataset = {
   fill: false,
   lineTension: 0.1,
   backgroundColor: 'rgba(75,192,192,0.4)',
-  borderColor: 'rgba(75,192,192,1)',
+  borderColor: 'rgba(167, 139, 250)',
   borderCapStyle: 'butt',
   borderDash: [],
   borderDashOffset: 0.0,
@@ -34,8 +35,8 @@ const dataset = {
 };
 
 const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }>) => {
-  const { data, refetch } = useQuery<ClubType[]>(`clubs/${params.id}`);
-  const { data: report } = useQuery<any>(`dailyreport/${params.id}`, {
+  const { data, refetch, isFetching } = useQuery<ClubType[]>(`clubs/${params.id}`);
+  const { data: report, isFetching: isFetching2 } = useQuery<any>(`dailyreport/${params.id}`, {
     select: (
       data: {
         club_id: number;
@@ -48,32 +49,36 @@ const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }
     }),
   });
 
-  const { mutate: deleteMember } = useMutation((data: any) => mutate('clubs/removemembers', data), {
-    onSuccess: () => {
-      refetch();
-    },
-  });
+  const { mutate: deleteMember, isLoading } = useMutation(
+    (data: any) => mutate('clubs/removemembers', data),
+    {
+      onSuccess: () => {
+        refetch();
+      },
+    }
+  );
 
   return (
     <Container>
+      <Button
+        onClick={() => {
+          history.push(`/invite/${params.id}`);
+        }}
+        variant="secondary"
+      >
+        Invite Member
+      </Button>
       {data && data?.length > 0 && (
         <div>
-          <Button
-            className="bg-purple-400"
-            onClick={() => {
-              history.push(`/invite/${params.id}`);
-            }}
-          >
-            Invite Member
-          </Button>
-          <div className="uppercase">{data[0].name}</div>
-          <div>Members</div>
+          <div className="uppercase my-2 font-bold text-lg">
+            {data[0].name} <Spinner show={isFetching || isFetching2 || isLoading} />
+          </div>
+          <div className="mb-2">Members</div>
           <div>
             {data.map(({ id, username }) => (
-              <div key={id}>
-                {username}
+              <div key={id} className="mb-1">
                 <i
-                  className="fa fa-trash cursor-pointer ml-3 text-red-600"
+                  className="fa fa-trash cursor-pointer mr-3 text-red-600"
                   onClick={() => {
                     if (!window.confirm('Are you sure you want to remove this member?')) return;
                     deleteMember({
@@ -82,6 +87,7 @@ const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }
                     });
                   }}
                 ></i>
+                {username}
               </div>
             ))}
           </div>
