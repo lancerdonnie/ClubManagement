@@ -1,12 +1,10 @@
-const isTestEnv = process.env.NODE_ENV === 'test';
-
 module.exports = {
-  type: !isTestEnv ? 'postgres' : 'sqlite',
+  type: 'postgres',
   host: process.env.PG_HOST,
   username: process.env.PG_USERNAME,
   password: process.env.PG_PASSWORD,
   port: 5432,
-  database: !isTestEnv ? process.env.PG_DATABASE : ':memory:',
+  database: process.env.PG_DATABASE,
   synchronize: true,
   // logging: process.env.NODE_ENV !== 'production',
   logging: false,
