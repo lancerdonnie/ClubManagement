@@ -4,6 +4,7 @@ import React from 'react';
 import { useMutation, useQuery } from 'react-query';
 import type { RouteComponentProps } from 'react-router-dom';
 import mutate from './api';
+import { Line } from 'react-chartjs-2';
 
 type ClubType = {
   id: number;
@@ -11,8 +12,41 @@ type ClubType = {
   username: string;
 };
 
+const dataset = {
+  label: 'members joined',
+  fill: false,
+  lineTension: 0.1,
+  backgroundColor: 'rgba(75,192,192,0.4)',
+  borderColor: 'rgba(75,192,192,1)',
+  borderCapStyle: 'butt',
+  borderDash: [],
+  borderDashOffset: 0.0,
+  borderJoinStyle: 'miter',
+  pointBorderColor: 'rgba(75,192,192,1)',
+  pointBackgroundColor: '#fff',
+  pointBorderWidth: 1,
+  pointHoverRadius: 5,
+  pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+  pointHoverBorderColor: 'rgba(220,220,220,1)',
+  pointHoverBorderWidth: 2,
+  pointRadius: 1,
+  pointHitRadius: 10,
+};
+
 const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }>) => {
   const { data, refetch } = useQuery<ClubType[]>(`clubs/${params.id}`);
+  const { data: report } = useQuery<any>(`dailyreport/${params.id}`, {
+    select: (
+      data: {
+        club_id: number;
+        count: number;
+        created_date: string;
+      }[]
+    ) => ({
+      datasets: [{ ...dataset, data: data.map((e) => e.count) }],
+      labels: data.map((e) => e.created_date),
+    }),
+  });
 
   const { mutate: deleteMember } = useMutation((data: any) => mutate('clubs/removemembers', data), {
     onSuccess: () => {
@@ -53,6 +87,10 @@ const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }
           </div>
         </div>
       )}
+      <div>
+        <h2 className="text-center">Daily Reports Graph</h2>
+        <Line data={report} />
+      </div>
     </Container>
   );
 };

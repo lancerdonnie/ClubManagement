@@ -1,5 +1,4 @@
 import { getConnection } from 'typeorm';
-import { Club } from './entity/Club';
 
 const { createConnection } = require('typeorm');
 

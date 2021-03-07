@@ -1,0 +1,21 @@
+{
+  "name": "clubmanagement",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "build": "cd backend && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lancerdonnie/ClubManagement.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lancerdonnie/ClubManagement/issues"
+  },
+  "homepage": "https://github.com/lancerdonnie/ClubManagement#readme"
+}

@@ -35,7 +35,7 @@ const NavBar = () => {
         </NavLink>
       </div>
       <div>
-        <span className="ml-2">{username}</span>
+        <span className="ml-2 uppercase text-blue-400">{username}</span>
         <span className="ml-2 navbutton cursor-pointer" onClick={() => dispatch(loginFail())}>
           Logout
         </span>

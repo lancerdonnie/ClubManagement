@@ -66,9 +66,7 @@ const Register = ({ location }: { location: Location<any> }) => {
             placeholder="Password"
           />
           <div className="flex justify-center">
-            <Button type="submit" loading={isLoading}>
-              register
-            </Button>
+            <Button type="submit">{isLoading ? 'registering' : 'register'}</Button>
           </div>
         </form>
       </div>

@@ -5,7 +5,6 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn,
 } from 'typeorm';
 
 @Entity('daily_report')

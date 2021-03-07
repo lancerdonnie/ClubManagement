@@ -7,11 +7,11 @@ import { DailyReport } from '../entity/DailyReport';
 const router = Router();
 
 //get daily report
-router.get('/getdailyreport/:id', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
+router.get('/dailyreport/:id', auth, async (req: RequestWithUser, res: Response<IResponse>) => {
   const clubId = req.params.id;
   try {
     //add join clubs here
-    const reports = await DailyReport.find({ where: { club_id: clubId } });
+    const reports = await DailyReport.find({ where: { club_id: clubId }, order: { created_date: 'ASC' } });
 
     return res.status(200).json({
       data: reports,

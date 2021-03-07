@@ -4,8 +4,8 @@ import { Router } from 'express';
 import auth from '../middleware/Auth';
 import { Invite } from '../entity/Invites';
 import { Club } from '../entity/Club';
-import { DailyReport } from '../entity/DailyReport';
 import { ClubMembers } from '../entity/ClubMembers';
+import { report } from './helper';
 
 const router = Router();
 
@@ -137,20 +137,7 @@ router.post('/:id', auth, async (req: RequestWithUser, res: Response<IResponse>)
 
     await club.save();
 
-    // let dailyReport = await DailyReport.findOne({
-    //   where: { created_date: new Date().toLocaleDateString(), club_id: club.id },
-    // });
-
-    // if (dailyReport) {
-    //   dailyReport.count = club.clubMembers.length;
-    // } else {
-    //   dailyReport = DailyReport.create({
-    //     created_date: new Date().toLocaleDateString(),
-    //     club_id: club.id,
-    //     count: club.clubMembers.length,
-    //   });
-    // }
-    // DailyReport.save(dailyReport);
+    await report(club.id);
 
     Invite.remove(invite);
 

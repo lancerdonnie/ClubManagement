@@ -73,9 +73,7 @@ const Login = ({ location }: { location: Location<any> }) => {
             register?
           </div>
           <div className="flex justify-center">
-            <Button type="submit" loading={isLoading}>
-              login
-            </Button>
+            <Button type="submit">{isLoading ? 'logging in' : 'login'}</Button>
           </div>
         </form>
       </div>

@@ -33,7 +33,9 @@ export const Toast = ({
       component ? (
         component(onClose)
       ) : (
-        <div className={`${bgMap[type]} ${textMap[type]} p-1 px-2 rounded border border-solid border-gray-400`}>
+        <div
+          className={`${bgMap[type]} ${textMap[type]} p-1 px-2 rounded border border-solid border-gray-400`}
+        >
           <span>{msg}</span>
           <i className="fa fa-times cursor-pointer ml-2" onClick={onClose}></i>
         </div>
