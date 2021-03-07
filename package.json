@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "heroku-postbuild": "tsc && cd frontend && npm install && npm run build",
+    "poststart": "cd frontend && npm prune --production",
+    "heroku-postbuild": "cd frontend && npm install && npm run build",
     "dev": "nodemon src/index.ts",
     "start": "node dist/index.js",
     "test": "jest --forceExit --detectOpenHandles  --watch --testTimeout=10000",
