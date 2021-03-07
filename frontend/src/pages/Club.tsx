@@ -71,11 +71,10 @@ const Club = ({ match: { params }, history }: RouteComponentProps<{ id: string }
       >
         Invite Member
       </Button>
+      <Spinner show={isFetching || isFetching2 || isLoading} />
       {data && (
         <div>
-          <div className="uppercase my-2 font-bold text-lg">
-            {data.name} <Spinner show={isFetching || isFetching2 || isLoading} />
-          </div>
+          <div className="uppercase my-2 font-bold text-lg">{data.name}</div>
           <div className="mb-2">Members</div>
           <div>
             {data.clubMembers.map(({ userId: id, user: { username } }) => (

@@ -9,7 +9,7 @@ import mutate from './api';
 const CreateClub = ({ history }: RouteComponentProps) => {
   const [state, setState] = useState({ name: '' });
 
-  const { mutate: createClub } = useMutation((data: typeof state) => mutate('clubs', data), {
+  const { mutate: createClub, isLoading } = useMutation((data: typeof state) => mutate('clubs', data), {
     onSuccess: () => {
       history.push('/myclubs');
     },
@@ -22,9 +22,9 @@ const CreateClub = ({ history }: RouteComponentProps) => {
 
   return (
     <Container>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="w-80">
         <Input placeholder="Club Name" onChange={(e) => setState({ name: e.target.value })} />
-        <Button>Submit</Button>
+        <Button variant="primary">{isLoading ? 'Submitting' : 'Submit'}</Button>
       </form>
     </Container>
   );

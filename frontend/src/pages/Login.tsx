@@ -66,6 +66,7 @@ const Login = ({ location }: { location: Location<any> }) => {
             type="password"
             placeholder="Password"
           />
+          <div className="text-center text-xs text-purple-700 mb-2">Test user:admin pass:admin</div>
           <div
             onClick={() => history.push('/register')}
             className="text-center mb-2 cursor-pointer text-blue-400"
