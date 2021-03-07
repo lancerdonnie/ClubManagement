@@ -8,7 +8,6 @@
     "heroku-postbuild": "tsc && cd frontend && npm install && npm run build && npm prune --production",
     "dev": "nodemon src/index.ts",
     "start": "node dist/index.js",
-    "test": "jest --forceExit --detectOpenHandles  --watch --testTimeout=10000",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "migration:run": "npm run typeorm -- migration:run"
   },

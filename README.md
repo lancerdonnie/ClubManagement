@@ -1,12 +1,22 @@
-# **:triangular_flag_on_post: HOSPITAL SOFTWARE** (version 1.0.0)
+# **:triangular_flag_on_post: CLUB MANAGEMENT** (version 1.0.0)
 
 ![node version](https://img.shields.io/badge/node->=14.0.0-brightgreen.svg)
 
-> A restful api that calculates overstay fees for hospital bookings.
+> A fullstack application for managing club members.
 
-## Visit [hospitalsoftware.herokuapp.com](https://hospitalsoftware.herokuapp.com/reservation) to test the live api!
+## Visit [clubboyage.herokuapp.com](https://clubboyage.herokuapp.com/) to test the live api!
 
 ## **:package: Tools used**
+
+frontend
+
+- [x] React
+- [x] Redux
+- [x] React-query
+- [x] Typescript
+- [x] Tailwind
+
+backend
 
 - [x] NodeJS
 - [x] Express
@@ -42,7 +52,6 @@ In order to install the project and all dependencies, enter in the project folde
 ### Start:Development
 
 ```bash
-npm run migration:run
 npm run dev
 ```
 
@@ -65,31 +74,6 @@ npm run build && npm start
 ```bash
 npm run build
 ```
-
----
-
----
-
-### Test
-
-```bash
-npm test
-```
-
-Additionally, to use the test.rest file, only if using vscode, install REST Client extension by Huachao Mao
-
----
-
----
-
-### Docker
-
-```bash
-docker build -t {imagename} .
-docker run -d -p 8080:5000 --name {name} {imagename}
-```
-
-- Open on http://localhost
 
 ---
 

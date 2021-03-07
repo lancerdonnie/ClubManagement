@@ -1,3 +1,5 @@
+const entity = process.env.NODE_ENV !== 'production' ? 'src/entity/**/*.ts' : 'dist/entity/**/*.js';
+
 module.exports = {
   type: 'postgres',
   host: process.env.PG_HOST,
@@ -8,7 +10,7 @@ module.exports = {
   synchronize: true,
   // logging: process.env.NODE_ENV !== 'production',
   logging: false,
-  entities: ['{dist,src}/entity/*{.ts,.js}'],
+  entities: [entity],
   migrations: ['dist/migration/**/*.js'],
   subscribers: ['dist/subscriber/**/*.js'],
   cli: {
