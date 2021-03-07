@@ -1,7 +1,7 @@
 import type { RootState } from 'redux/reducer';
 import type { Location } from 'history';
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Toast from 'Utils/Toast';
 import { loginSuccess } from 'redux/actions';
@@ -17,6 +17,7 @@ type LoginType = {
 };
 
 const Register = ({ location }: { location: Location<any> }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const authenticated = useSelector((state: RootState) => state.authenticated);
 
@@ -65,6 +66,12 @@ const Register = ({ location }: { location: Location<any> }) => {
             type="password"
             placeholder="Password"
           />
+          <div
+            onClick={() => history.push('/login')}
+            className="text-center mb-2 cursor-pointer text-blue-400"
+          >
+            sign in?
+          </div>
           <div className="flex justify-center">
             <Button type="submit">{isLoading ? 'registering' : 'register'}</Button>
           </div>

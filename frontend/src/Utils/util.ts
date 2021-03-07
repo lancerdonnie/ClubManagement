@@ -14,7 +14,6 @@ export const queryClient = new QueryClient({
         } = await axios.get(`${queryKey[0]}`);
         return data;
       },
-      refetchOnWindowFocus: false,
       retry: (_: number, error: any): boolean => (!error.response ? true : false),
     },
   },

@@ -24,7 +24,7 @@ const MyClubs = ({ history }: RouteComponentProps) => {
       <div className="w-72">
         {data?.map(({ id, name, admin }) => (
           <div key={id} className="flex justify-between items-center mb-1">
-            <span className={`${admin ? 'cursor-pointer' : ''} mr-2 break-words`}>{name}</span>
+            <span className={`${admin ? 'cursor-pointer' : ''} mr-2 break-words uppercase`}>{name}</span>
             {admin && (
               <Button
                 onClick={() => {
