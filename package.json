@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "poststart": "cd frontend && npm prune --production",
-    "heroku-postbuild": "cd frontend && npm install && npm run build",
+    "heroku-postbuild": "tsc && cd frontend && npm install && npm run build",
     "dev": "nodemon src/index.ts",
     "start": "node dist/index.js",
     "test": "jest --forceExit --detectOpenHandles  --watch --testTimeout=10000",
